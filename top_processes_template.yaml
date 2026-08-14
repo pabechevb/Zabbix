@@ -1,0 +1,281 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 748ad4d098d447d492bb935c907f652f
+      name: Templates/Databases
+  templates:
+    - uuid: da1ced82bb1c4f31bcdad68419d75c1a
+      template: 'Top processes'
+      name: 'Top processes'
+      groups:
+        - name: Templates/Databases
+      items:
+        - uuid: 0a5fafe8317b435cad580a2a5bc7c20a
+          name: 'Top processes'
+          type: ZABBIX_ACTIVE
+          key: custom.processes
+          value_type: TEXT
+          trends: '0'
+      discovery_rules:
+        - uuid: 25215b1e62b04574877f3a372a257614
+          name: 'Top processes'
+          type: DEPENDENT
+          key: processes
+          delay: '0'
+          item_prototypes:
+            - uuid: 910865f6161848b4a44b587c7dae5e0d
+              name: 'CPU of {#PRG}'
+              type: DEPENDENT
+              key: 'cpu[{#PRG}]'
+              delay: '0'
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].CPU.first()'
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '100'
+              master_item:
+                key: custom.processes
+            - uuid: 7a93cc068b1044ed856e713b5646a03e
+              name: 'Handles of {#PRG}'
+              type: DEPENDENT
+              key: 'handles[{#PRG}]'
+              delay: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].HND.first()'
+              master_item:
+                key: custom.processes
+            - uuid: 0d41493e39b1435e909c4f4ebaef01a1
+              name: 'Memory of {#PRG}'
+              type: DEPENDENT
+              key: 'memory[{#PRG}]'
+              delay: '0'
+              units: B
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].MEM.first()'
+              master_item:
+                key: custom.processes
+            - uuid: 78f70344c9eb463b8bf2c0c9861818ae
+              name: 'Threads of {#PRG}'
+              type: DEPENDENT
+              key: 'threads[{#PRG}]'
+              delay: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].THR.first()'
+              master_item:
+                key: custom.processes
+            - uuid: a41c792e3e7949c4af6f96f3897e52b9
+              name: 'Virtual memory of {#PRG}'
+              type: DEPENDENT
+              key: 'virtmem[{#PRG}]'
+              delay: '0'
+              units: B
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].VMM.first()'
+              master_item:
+                key: custom.processes
+            - uuid: 0212db1acb8b441d9651f98837d9f404
+              name: 'Waiting threads of {#PRG}'
+              type: DEPENDENT
+              key: 'waiting_threads[{#PRG}]'
+              delay: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.PRG == "{#PRG}")].WTC.first()'
+              master_item:
+                key: custom.processes
+          master_item:
+            key: custom.processes
+          lld_macro_paths:
+            - lld_macro: '{#PRG}'
+              path: $.PRG
+      dashboards:
+        - uuid: 7634c989f61c4621bd174a80c7f72498
+          name: 'Top processes'
+          display_period: '60'
+          auto_start: 'NO'
+          pages:
+            - widgets:
+                - type: svggraph
+                  name: 'Working Set'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.approximation
+                      value: '4'
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Memory of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: TUHVH
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: CPU
+                  'y': '5'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'cpu of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: AZRHE
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: Threads
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Threads of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: QDTUI
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: 'Virtual Memory'
+                  x: '36'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.approximation
+                      value: '4'
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Virtual memory of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: NELYQ
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: Handles
+                  x: '36'
+                  'y': '5'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Handles of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: LDMJG
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
+                - type: svggraph
+                  name: 'Waiting threads'
+                  x: '36'
+                  'y': '10'
+                  width: '36'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: ds.0.color
+                      value: FF465C
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'Waiting threads of *'
+                    - type: INTEGER
+                      name: ds.0.stacked
+                      value: '1'
+                    - type: INTEGER
+                      name: ds.0.type
+                      value: '2'
+                    - type: INTEGER
+                      name: legend
+                      value: '0'
+                    - type: STRING
+                      name: reference
+                      value: NXWET
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
